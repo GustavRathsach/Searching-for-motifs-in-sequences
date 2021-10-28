@@ -2,3 +2,9 @@
 
 #this is the start of the project
 
+#input:
+#fasta file, a signal description file and a deviation (a number)
+
+
+
+
