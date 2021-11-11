@@ -1,43 +1,56 @@
 #!/usr/bin/env python3
-import re
 
-Infile = input('Please enter the signal deciption file: ')
+#Imported needed packages
+import re
+import sys
+
+#Asking for file
+try:
+	Infile = input('Please enter the signal deciption file: ')
+except IOError as error:
+	print('Can\'t open file, reason:', str(error))
+
+#Reading signal deciption file
 SignalFile = open(Infile, 'r')
 
-"""
-Signal = dict()
+
+#Define variables to use
+Signal = []
+AddNucleotide = []
+AddSpace = []
+Position = 0
+
+#Split nucleotides at same position
+def split(sequence):
+	Bases = []
+	for base in sequence:
+		Bases.append(base)
+	return Bases
+
+#Reading each lin in the file
 for line in SignalFile:
+
+	#Making list for the unimportant sequense, and add to overall list
 	if line[0] == '*':
-		Signal['space'] = line[2:-1].split(sep='-')
-	if not line[0]in ['#', '*']:
-		Signal[line[0]] = line[2:-1]
+		Space = re.search(r'\s+([0-9]+)-([0-9]+)', line)
+		AddSpace = [[Position, 'Space', Space.group(1), Space.group(2)]]
+		Signal += AddSpace
+		Position += 1
+		
+	#Making list for each position with bases and penalty for this position
+	if not line[0] in ['#', '*']:
+		Nucleotide = re.search(r'([ATCG]{1,3})\s+([0-9]+)', line)
+		Bases = split(Nucleotide.group(1))
+		if len(Bases) == 1:
+			AddNucleotide = [[Position, Nucleotide.group(2), Bases[0]]]
+		if len(Bases) == 2:
+			AddNucleotide = [[Position, Nucleotide.group(2), Bases[0], Bases[1]]]
+		if len(Bases) == 3:
+			AddNucleotide = [[Position, Nucleotide.group(2), Bases[0], Bases[1], Bases[2]]]
+		Signal += AddNucleotide
+		Position += 1
 print(Signal)
 
-count = 0	
-count2 = 0
-Nucleotide = dict()
-Penalty = dict()
-for line in SignalFile:
-	if line[0] == '*':
-		MinSpace = re.search(r'\s+([0-9]+)-[0-9]+', line)
-		Nucleotide[count] = MinSpace.group(1)
-		count += 1
-	if not line[0] in ['#', '*']:
-		Nucleotide[count] = line[0]
-		count += 1
-	if line[0] == '*':
-		MaxSpace = re.search(r'\s+[0-9]+-([0-9]+)', line)
-		Penalty[count2] = MaxSpace.group(1)
-		count2 += 1
-	if not line[0] in ['#', '*']:
-		Penalty[count2] = line[2]
-		count2 += 1
-		
-print(Nucleotide)
-print(Penalty)
-
-
-"""
-
-
-
+#The output is a list of list with the following formats:
+#[position, penalty, base, base, base]
+#[position, 'space', min, max]
