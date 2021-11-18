@@ -76,15 +76,15 @@ print(Signal)
 
 
 
-#length of signalfile and sequence
-length=0
+#length of signalfile (amount of signal(bases) and sequence
+length=0   
 lines=0
 for element in Signal:
 	lines += 1
 	if element[1] == 'Space':
 		length += int(element[3])
 length += len(Signal)
-length += -1
+length += -1				#does not take different amounts of spaces into account
 print(len(Signal))
 #print(lines)
 	
@@ -111,7 +111,7 @@ counter=0
 for line in infile:						#read through the file
 	
 	if line.startswith('>'):			#finds entries
-		#print(line)
+		IDline=line
 		line=infile.readline()			#skips to sequence
 	
 		while line.rstrip() != '':		#ensures we are stopping after the sequence
@@ -131,14 +131,14 @@ for line in infile:						#read through the file
 		
 		#print(sequence)
 		
-		#i is a variable for the starting position of our reading frame
+		#i is a variable for position of our reading frame
 		for i in range(len(sequence)-length-1):
 		
 			#[position, penalty, base1, base2, base3]
 			
 			penaltyscore=0
 			
-			#j is a variable for position in the a reading entry
+			#j is a variable for position in the Signalfile
 			for j in range(length-1):			#Lines in the amount of lines in the signal file
 				#print(sequence[i+j])
 				#print(Signal[j][2])
@@ -150,7 +150,7 @@ for line in infile:						#read through the file
 						i += int(Signal[j][2])
 						j+=1
 						break
-					elif sequence[i+j] != Signal[j][2] or sequence[i+j] != Signal[j][3]:
+					elif sequence[i+j] != Signal[j][2] or sequence[i+j] != Signal[j][3]:			#i + j indicates position in the active reading frame
 						penaltyscore += int(Signal[j][1])
 						
 					
@@ -163,8 +163,12 @@ for line in infile:						#read through the file
 			totalpen=penaltyscore
 			penaltyscore=0
 			
-			if totalpen < maxpenalty:			
-			###############################################   SAME THING AGAIN, BUT AFTER THE BREAK			
+			if totalpen < maxpenalty:		
+
+			
+			###############################################   SAME THING AGAIN, BUT AFTER THE SPACE	
+
+			
 				for j2 in range(int(Signal[j-1][3])-int(Signal[j-1][2])):
 				
 				#J2 is the range after space, it varies with space interval
@@ -197,7 +201,7 @@ for line in infile:						#read through the file
 					#the different starts after the space gets put into a list and sorted and the best value gets extracted
 						Slist.append([])
 						Slist[counter].append(penaltyscore+totalpen)
-						Slist[counter].append(h)
+						Slist[counter].append(j2+int(Signal[j-1][2])) #h+j2 is 
 						
 						counter+=1
 						penaltyscore=0
@@ -206,8 +210,8 @@ for line in infile:						#read through the file
 					Slist=[]
 					counter=0
 					if sortedSlist[0][0] < maxpenalty:
-						print(sortedSlist[0], i, sequencenr)    #SORTEDLIST = [PENALTY, WHICH BASE IS COUNTED]
-			
+						
+						print('Match at sequence' , IDline, 'starting at base ',i, 'with a score of: ' ,sortedSlist[0][0], 'and a space of:', sortedSlist[0][1] )
 			
 			
 			
